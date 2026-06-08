@@ -8,13 +8,13 @@ const Order = require('../models/Order');
 exports.getDashboard = async (req, res) => {
   try {
     // Toplam ürün sayısı
-    const totalProducts = await Product.countDocuments({ status: 'active' });
+    const totalProducts = await Product.countDocuments();
 
     // Toplam tedarikçi sayısı
-    const totalSuppliers = await Supplier.countDocuments({ status: 'Active' });
+    const totalSuppliers = await Supplier.countDocuments();
 
     // Toplam müşteri sayısı
-    const totalCustomers = await Customer.countDocuments({ status: 'active' });
+    const totalCustomers = await Customer.countDocuments();
 
     // Son müşteriler (son 10)
     const recentCustomers = await Customer.find({ status: 'active' })
