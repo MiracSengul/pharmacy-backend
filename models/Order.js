@@ -5,7 +5,8 @@ const orderSchema = new mongoose.Schema(
     customer: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Customer',
-      required: true,
+      required: false,   // ← required: false yap
+      default: null,
     },
     customerName: {
       type: String,
