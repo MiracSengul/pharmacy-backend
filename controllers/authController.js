@@ -61,6 +61,70 @@ exports.login = async (req, res) => {
   });
 };
 
+exports.register = async (req, res) => {
+  try {
+    const { name, email, password } = req.body;
+
+    // Email formatı kontrolü
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (!email || !emailRegex.test(email)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Geçerli bir e-posta adresi giriniz.',
+      });
+    }
+
+    // Şifre uzunluğu kontrolü
+    if (!password || password.length < 6) {
+      return res.status(400).json({
+        success: false,
+        message: 'Şifre en az 6 karakter olmalıdır.',
+      });
+    }
+
+    // İsim kontrolü
+    if (!name || name.length < 2) {
+      return res.status(400).json({
+        success: false,
+        message: 'İsim en az 2 karakter olmalıdır.',
+      });
+    }
+
+    // Kullanıcı zaten var mı?
+    const existingUser = await User.findOne({ email: email.toLowerCase() });
+    if (existingUser) {
+      return res.status(400).json({
+        success: false,
+        message: 'Bu e-posta adresi zaten kayıtlı.',
+      });
+    }
+
+    // Yeni kullanıcı oluştur
+    const user = await User.create({
+      name,
+      email: email.toLowerCase(),
+      password,
+      role: 'customer', // Müşteri tarafından kayıt olanlar 'customer' rolünde
+    });
+
+    res.status(201).json({
+      success: true,
+      message: 'Kayıt başarılı. Giriş yapabilirsiniz.',
+      data: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+      },
+    });
+  } catch (error) {
+    console.error('Kayıt hatası:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Kayıt sırasında bir hata oluştu.',
+    });
+  }
+};
+
 // @desc    Kullanıcı çıkışı
 // @route   GET /api/user/logout
 exports.logout = async (req, res) => {
